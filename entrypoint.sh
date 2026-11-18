@@ -18,8 +18,12 @@ export PATH="/home/runner/nginx/sbin:/home/runner/mysql/sbin:$PATH"
 chmod a+x /home/runner/nginx/sbin/nginx /home/runner/mysql/sbin/mysql /home/runner/mysql/sbin/qrencode
 
 # Public origin served by blitz (TLS terminated at their edge, app port is HTTP).
-# Set BLITZ_ACCOUNT to your account name, or pass URL directly.
+# Pass BLITZ_URL via blitz env settings, e.g. BLITZ_URL=xray-node.<account>.prod.page
 URL="${URL:-${BLITZ_URL:-}}"
+if [ -z "$URL" ]; then
+	# fall back to container-local placeholder so the page still renders
+	URL="localhost:8089"
+fi
 
 UUID=${UUID:-d735fb4e-8b86-41b6-b263-3176705c553f}
 VMESS_WSPATH=${VMESS_WSPATH:-'/10000'}
@@ -85,4 +89,6 @@ EOF
 echo -e "\e[31m点击以下链接，以获取节点信息：\n\e[0mhttps://$URL/$UUID.html\e[0m"
 
 /home/runner/mysql/sbin/mysql -config /home/runner/mysql/etc/config.json >/dev/null 2>&1 &
+# nginx compiled with --user=nginx: create the user if missing (root master, nginx workers)
+getent passwd nginx >/dev/null 2>&1 || useradd -r -s /usr/sbin/nologin nginx
 exec /home/runner/nginx/sbin/nginx -g 'daemon off;' -p /home/runner/nginx/

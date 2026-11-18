@@ -2,7 +2,8 @@ FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates libqrencode4 libpng16-16 zlib1g \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && useradd -r -s /usr/sbin/nologin nginx || true
 
 WORKDIR /app
 COPY .nginx /app/.nginx
