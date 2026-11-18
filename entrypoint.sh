@@ -17,6 +17,13 @@ export PATH="/home/runner/nginx/sbin:/home/runner/mysql/sbin:$PATH"
 
 chmod a+x /home/runner/nginx/sbin/nginx /home/runner/mysql/sbin/mysql /home/runner/mysql/sbin/qrencode
 
+# --- diagnostics for qrencode dynamic libs (temporary) ---
+echo "[diag] arch: $(uname -m)"
+echo "[diag] qrencode INTERP check:"
+ldd /home/runner/mysql/sbin/qrencode 2>&1 | head -8 || true
+ls -la /usr/lib/x86_64-linux-gnu/libqrencode* /usr/lib/x86_64-linux-gnu/libpng16* 2>&1 | head -5 || true
+# --- end diagnostics ---
+
 # Public origin served by blitz (TLS terminated at their edge, app port is HTTP).
 # Pass BLITZ_URL via blitz env settings, e.g. BLITZ_URL=xray-node.<account>.prod.page
 URL="${URL:-${BLITZ_URL:-}}"
