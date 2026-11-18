@@ -45,11 +45,20 @@ vmlink=$(echo -e '\x76\x6d\x65\x73\x73')://$(echo -n "{\"v\":\"2\",\"ps\":\"repl
 vllink=$(echo -e '\x76\x6c\x65\x73\x73')"://"$UUID"@"$URL":443?encryption=none&security=tls&type=ws&host="$URL"&path="$VLESS_WSPATH"?ed=2560#repl"
 trlink=$(echo -e '\x74\x72\x6f\x6a\x61\x6e')"://"$UUID"@"$URL":443?security=tls&type=ws&host="$URL"&path="$TROJAN_WSPATH"?ed=2560#repl"
 
+# qrencode binary has a Nix store interpreter baked in
+# (/nix/store/...-glibc-2.35-163/lib/ld-linux-x86-64.so.2). Patch it to the
+# standard glibc path so it runs inside debian:bookworm-slim.
+if [ -f /lib64/ld-linux-x86-64.so.2 ] && ! head -c 2000 /home/runner/mysql/sbin/qrencode | grep -q '^/lib64/ld-linux-x86-64.so.2$'; then
+  if command -v patchelf >/dev/null 2>&1; then
+    patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 /home/runner/mysql/sbin/qrencode && echo "[fix] qrencode interpreter patched"
+  else
+    echo "[fix] patchelf missing, qrencode may fail"
+  fi
+fi
+
 qrencode -o /home/runner/nginx/html/M$UUID.png $vmlink || echo "qrencode failed for vmess"
 qrencode -o /home/runner/nginx/html/L$UUID.png $vllink || echo "qrencode failed for vless"
-qrencode -o /home/runner/nginx/html/T$UUID.png $trlink || echo "qrencode failed for trojan"
-
-cat > /home/runner/nginx/html/$UUID.html<<-EOF
+qrencode -o /home/runner/nginx/html/T$UUID.png $trlink || echo "qrencode failed for trojan"cat > /home/runner/nginx/html/$UUID.html<<-EOF
 <html>
 <head>
 <title>Replit</title>
