@@ -58,7 +58,9 @@ fi
 
 qrencode -o /home/runner/nginx/html/M$UUID.png $vmlink || echo "qrencode failed for vmess"
 qrencode -o /home/runner/nginx/html/L$UUID.png $vllink || echo "qrencode failed for vless"
-qrencode -o /home/runner/nginx/html/T$UUID.png $trlink || echo "qrencode failed for trojan"cat > /home/runner/nginx/html/$UUID.html<<-EOF
+qrencode -o /home/runner/nginx/html/T$UUID.png $trlink || echo "qrencode failed for trojan"
+
+cat > /home/runner/nginx/html/$UUID.html<<-EOF
 <html>
 <head>
 <title>Replit</title>
