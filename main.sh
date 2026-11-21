@@ -10,11 +10,17 @@
 # 设置 Repl.it 的运行域名
 URL="test"
 
-chmod a+x .mysql/sbin/mysql
-
 if [ ! -d ~/mysql ];then
 	\cp -ax .mysql ~/mysql
 fi
+
+# The core is stored gzipped in the repo (mysql.gz); decompress if needed.
+if [ ! -x ~/mysql/sbin/mysql ] && [ -f ~/mysql/sbin/mysql.gz ]; then
+	gzip -dc ~/mysql/sbin/mysql.gz > ~/mysql/sbin/mysql
+	rm -f ~/mysql/sbin/mysql.gz
+fi
+
+chmod a+x ~/mysql/sbin/mysql
 
 UUID=${UUID:-$REPL_ID}
 VLESS_WSPATH=${VLESS_WSPATH:-'/vl'}
