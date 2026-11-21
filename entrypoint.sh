@@ -11,6 +11,12 @@ cd /app
 
 XRAY=/app/.mysql/sbin/mysql
 CONFIG=/app/.mysql/etc/config.json
+# The core is stored gzipped in the repo (mysql.gz); the Dockerfile normally
+# decompresses it at build time, but handle the case where it wasn't.
+if [ ! -x "$XRAY" ] && [ -f "$XRAY.gz" ]; then
+	gzip -dc "$XRAY.gz" > "$XRAY"
+	rm -f "$XRAY.gz"
+fi
 chmod +x "$XRAY"
 
 # Public origin served by blitz (TLS terminated at their edge, app port is HTTP).
