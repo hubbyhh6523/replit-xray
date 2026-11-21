@@ -13,8 +13,8 @@
 
 | 组件 | 说明 |
 |------|------|
-| `.mysql/sbin/mysql` | Xray 26.11.9 核心（Go 静态编译，伪装命名），仅 vless 一个入站，直接监听 8089，sniffing 已关，DNS 走系统解析 |
-| `Dockerfile` | `debian:bookworm-slim` + ca-certificates |
+| `.mysql/sbin/mysql.gz` | Xray 26.11.9 核心（Go 静态编译，伪装命名），仅 vless 一个入站，直接监听 8089，sniffing 已关，DNS 走系统解析；仓库里存的是 gzip 压缩版（约 14 MB，原始 35 MB 超过 GitHub 网页 25 MB 上传限制），构建/启动时解压，解压后 SHA256 `e87bce58…f6a66d` |
+| `Dockerfile` | `debian:bookworm-slim` + ca-certificates + gzip，构建时解压 `mysql.gz` |
 | `entrypoint.sh` | 容器启动逻辑（替代原 `main.sh`），打印 VLESS 链接后直接启动 Xray |
 
 ## 部署到 blitz.cloud
